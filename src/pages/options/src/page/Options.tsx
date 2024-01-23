@@ -59,7 +59,7 @@ const Options: React.FC = () => {
       <div className='p-5 rounded-xl bg-white w-fit shadow-2xl drop-shadow-lg'>
           <div className='text-center space-y-2'>
               <h1 className='text-3xl font-bold'>Options</h1>
-              <h3 className='text-xs'>Enter your OpenAI API key below to get started.</h3>
+              <h3 className='text-xs'>Enter your OpenAI APIasddasdas key below to get started.</h3>
           </div>
 
           <div>
@@ -67,7 +67,6 @@ const Options: React.FC = () => {
                   <input type="text" className='border border-black px-1 py-0 w-full focus:outline-none text-sm' 
                       onChange={(e) => setApiKey(e.target.value)} 
                       placeholder='Open AI API key'/> 
-                  
                   
                   <button onClick={() => onSubmit(Action.ADD)} className='cursor-pointer rounded-lg text-white flex items-center space-x-2 transition-colors duration-200 bg-[#4caf50] px-4 py-3 active:bg-[#2e6f30] hover:bg-[#2e6f30]'>
                       <FaSave height={20} width={20} color='#fff'/>
