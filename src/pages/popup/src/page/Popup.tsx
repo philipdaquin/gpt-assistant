@@ -8,6 +8,9 @@ import { BsFillSendFill } from 'react-icons/bs';
 import { useState } from 'react';
 // import { BsFillSendFill } from "react-icons/bs";
 
+import { FaRobot } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
+import { FaGear } from "react-icons/fa6";
 
 
 
@@ -17,9 +20,12 @@ type MessageFormat = {
 }
 
 enum Models { 
-  GPT_35_Turbo = 'GPT-3.5 Turbo',
-  GPT4 = 'GPT-4'
+  GPT_35_Turbo = 'gpt-3.5-turbo',
+  GPT4 = 'gpt-4'
 }
+
+
+const OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
 
 const Popup = () => {
@@ -82,35 +88,68 @@ const Popup = () => {
     },
   ]
 
+
+  const [newMessage, setNewMessage] = useState('')
   const [toggle, setToggle] = useState(true)
   const openDropDown = () => setToggle(!toggle)
+
+
+  const sendMessage = async () => { 
+    //
+    //  Send messages to chat gpt 
+    const apiKey = ""
+    const response = await fetch(OPENAI_URL, { 
+      method: 'POST', 
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      }, 
+      body: JSON.stringify({ 
+        model: modelSelected,
+        messages: newMessage
+      })
+    });
+    // const { choices, error } = await response.json();
+    // if (response.ok) {
+    //   if (choices?.length > 0) {
+    //     const newSystemMessageSchema: MessageSchema = {
+    //       role: 'system',
+    //       content: choices[0].message.content,
+    //     };
+    //     res.json(newSystemMessageSchema);
+    //   } else {
+    //     // send error
+    //     res.status(500).send('No response from OpenAI');
+    //   }
+    // } else {
+    //   res.status(500).send(error.message);
+    // }
+  }
 
 
   return (
     <div className='flex flex-col  w-full '>
       <div className='flex flex-row justify-between top-0 z-10 fixed w-full bg-gray-300 py-4 px-4 overflow-hidden'>
-        <button onClick={openDropDown} className='p-2 px-2 bg-slate-200 w-fit rounded-2xl text-[14px]' 
-          title='LLM Engine'>
-          🤖 {modelSelected}
-
-           
-        </button>
-
+        
+        <div className="relative">
+          <button onClick={openDropDown} className='py-2 px-4 flex flex-row items-center  justify-center space-x-3 bg-slate-200 w-fit rounded-2xl text-[14px]' 
+            title='LLM Engine'>
+            <FaRobot height={20} width={20} color='#000'/> 
+            <p>{modelSelected}</p>
+          </button>
+        </div>
 
         <div className='flex items-center space-x-2'>
           <button className='p-2 bg-slate-200 w-fit rounded-xl' title='Clear chat'>
-            🗑️
+            <FaTrash height={20} width={20} color='#000'/>
+
           </button>
           <button className='p-2 bg-slate-200 w-fit rounded-xl' title='Setting'>
-            ⚙️
+          <FaGear height={20} width={20} color='#000'/>
+
           </button>
         </div>
       </div>
-
-      <div hidden={toggle} className='absolute flex flex-col space-y-1 items-left bg-white w-full text-left' >
-              <button className='p-2 text-left ' onClick={() => setModelSelected(Models.GPT_35_Turbo)}>GPT 3.5 Turbo</button>
-              <button className='p-2 text-left ' onClick={() => setModelSelected(Models.GPT4)}>GPT-4</button>
-            </div>
 
 
       {/* Scrollable chats */}

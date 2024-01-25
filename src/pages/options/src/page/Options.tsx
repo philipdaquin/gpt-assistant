@@ -61,7 +61,6 @@ const Options: React.FC = () => {
               <h1 className='text-3xl font-bold'>Options</h1>
               <h3 className='text-xs'>Enter your OpenAI APIasddasdas key below to get started.</h3>
           </div>
-
           <div>
               <div className='flex space-x-3 mt-5'>
                   <input type="text" className='border border-black px-1 py-0 w-full focus:outline-none text-sm' 
