@@ -19,12 +19,9 @@ const manifest = {
   description: 'A minified version of ChatGPT. The purpose is simplify my use of ChatGPT without using moving to another page. ',
   author: "Philip Daquin",
   permissions: [
-    'storage', 
-    'sidePanel'
+    'storage'
   ],
-  side_panel: {
-    default_path: 'src/pages/sidepanel/index.html',
-  },
+
   host_permissions: [
     "https://api.openai.com/v1/completions"
   ],
@@ -55,7 +52,7 @@ const manifest = {
   devtools_page: 'src/pages/devtools/index.html',
   web_accessible_resources: [
     {
-      resources: ['assets/js/*.js', 'assets/css/*.css', 'icon-128.png', 'icon-34.png'],
+      resources: ['assets/js/*.js', 'assets/css/*.css', 'gptchat_128.png', 'gptchat_32.png'],
       matches: ['*://*/*'],
     },
   ],

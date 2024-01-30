@@ -60,7 +60,7 @@ export default defineConfig({
         contentStyle: resolve(pagesDir, 'content', 'style.scss'),
         popup: resolve(pagesDir, 'popup', 'index.html'),
         options: resolve(pagesDir, 'options', 'index.html'),
-        sidepanel: resolve(pagesDir, 'sidepanel', 'index.html'),
+        // sidepanel: resolve(pagesDir, 'sidepanel', 'index.html'),
       },
       output: {
         entryFileNames: 'src/pages/[name]/index.js',

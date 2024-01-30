@@ -12,4 +12,3 @@ A minified version of ChatGPT. The purpose is simplify my use of ChatGPT without
 3. Enjoy!
 
 
-

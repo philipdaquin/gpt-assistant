@@ -18,6 +18,8 @@ import { useEffect } from 'react';
 // import chatHistory from '@root/src/shared/storages/chatHistory';
 // import { useEffect } from 'react';
 // import useStorage from '@root/src/shared/hooks/useStorage';
+import Loader from 'react-loader-spinner'
+import { useRef } from 'react';
 
 
 const Popup = () => {
@@ -57,7 +59,25 @@ const Popup = () => {
     }
 
   ])
-  
+
+
+
+  // const mockData: MessageFormat[] = [
+  //   { role: Role.AI, content: 'Hello! How can I assist you today?' },
+  //   { role: Role.User, content: 'Hi there! I have a question about your services.' },
+  //   { role: Role.AI, content: "Sure, I'd be happy to help. What do you need assistance with?" },
+  //   { role: Role.User, content: "I'm having trouble with my account login." },
+  //   { role: Role.AI, content: "I apologize for the inconvenience. Could you please provide your username?" },
+  //   { role: Role.User, content: 'My username is example_user123.' },
+  //   { role: Role.AI, content: 'Thank you. Let me check that for you.' },
+  //   { role: Role.AI, content: 'It looks like there might be an issue with your password. Would you like to reset it?' },
+  //   { role: Role.User, content: 'Yes, please guide me through the password reset process.' },
+  //   // ... add more messages as needed
+  // ];
+
+
+
+
     // const result: MessageFormat[] | null = JSON.parse(localStorage.getItem('chatHistory'))
     // // console.log(result)
     // if (result !== null || result.length > 2) { 
@@ -130,11 +150,33 @@ const Popup = () => {
   }
 
 
+  const chatContainer = useRef(null)
+  // const scrollToBottom = () => {
+  //   if (chatContainer.current) { 
+  //     chatContainer.current.scrollTop = chatContainer.current.scrollHeight
+  //   }
+  // }
+
+  useEffect(() => { 
+    // scrollToBottom()
+    if (chatMessages.length) { 
+      chatContainer.current?.scrollIntoView(({
+        behavior: "smooth",
+        block: 'end'
+      }))
+
+    }
+  }, [chatMessages])
+
+
+
+
+
   return (
     <div className='flex flex-col  w-full '>
 
 
-      <div className='flex flex-row justify-between top-0 z-10 fixed w-full bg-gray-300 py-4 px-4 overflow-hidden'>
+      <div className='flex shadow-md flex-row justify-between top-0 z-10 fixed w-full bg-gray-300 py-4 px-4 overflow-hidden'>
         <div className="relative">
           <button onClick={openDropDown} 
             className='hover:bg-gray-400 py-2 w-36 flex  flex-row items-center ring-2 ring-slate-400  
@@ -156,13 +198,14 @@ const Popup = () => {
 
 
       {/* Chat History */}
-      <div className='pl-4 w-full h-full flex-col items-center justify-center'>
-        <div className='overflow-auto max-h-[300px]'>
+      <div className='pl-4 pt-4 w-full h-full flex-col items-center justify-center relative top-16'>
+        <div  className='overflow-auto max-h-[240px]'>
           {chatMessages.map(({content, role}, idx) => { 
             return (
-              <div key={idx} className='p-2 flex-col flex text-left items-start rounded-full w-full  mt-1'>
+              <div key={idx} 
+                  className={` pr-4 py-2 text-wrap space-y-1  flex-col flex text-left items-start rounded-xl w-fit   mt-2`}>
                 <div className='font-bold'>
-                  {role}
+                  {role === Role.AI ? 'AI' : 'You'}
                 </div>
                 <div>
                   {content}
@@ -170,6 +213,7 @@ const Popup = () => {
               </div>
             )
           })}
+          <div ref={chatContainer}></div>
         </div>
       </div>
 
@@ -199,7 +243,15 @@ const Popup = () => {
           className=' items-center flex justify-center p-2 bg-slate-200 hover:bg-gray-400 w-10 h-10 rounded-xl' 
           title='Send'
           >
-            <BsFillSendFill height={10} width={10}/>
+
+            {
+              loading ? (
+                <Loader type="BallTriangle" color="black" height={20} width={20} />
+              ) : (
+                <BsFillSendFill height={10} width={10}/>
+              )
+            }
+
         </button>
 
       </form>
