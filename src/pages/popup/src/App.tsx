@@ -1,6 +1,6 @@
 import React from 'react'
 import Popup from './page/Popup'
-import { BsFillSendFill } from "react-icons/bs";
+// import { BsFillSendFill } from "react-icons/bs";
 
 function App() {
 

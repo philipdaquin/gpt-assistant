@@ -37,8 +37,8 @@ const Options: React.FC = () => {
               chrome.storage.local.set({'apiKey' : apiKey}, function () { 
                   console.log('Data saved:', apiKey)
               })
-              setMessage('Successfully updated the OpenAI API Key')
-
+              setMessage("Successfully updated the OpenAI API Key! Don't forget to 📌 on your browser")
+              
           } else {
               chrome.storage.local.remove('apiKey', function () { 
                   console.log('Data saved:', apiKey)
@@ -48,7 +48,7 @@ const Options: React.FC = () => {
 
           setTimeout(() => { 
               setMessage('')
-          }, 2000)
+          }, 3000)
 
       } else { 
           setMessage('Please enter a valid API key.')
@@ -60,7 +60,17 @@ const Options: React.FC = () => {
       <div className='p-5 rounded-xl bg-white w-fit shadow-2xl drop-shadow-lg'>
           <div className='text-center space-y-2'>
               <h1 className='text-3xl font-bold'>Options</h1>
-              <h3 className='text-xs'>Enter your OpenAI APIasddasdas key below to get started.</h3>
+              <h3 className='text-xs flex justify-center space-x-2 text-center'>
+                Enter your  
+                <a 
+                    href="https://platform.openai.com/api-keys" 
+                    className='underline to-blue-400 ml-1 mr-1'
+                    target="_blank"
+                    rel="noopener noreferrer"
+                > OpenAI API key </a>
+
+                below to get started.
+              </h3>
           </div>
           <div>
               <div className='flex space-x-3 mt-5'>

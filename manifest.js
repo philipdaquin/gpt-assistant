@@ -18,8 +18,7 @@ const manifest = {
   
   permissions: [
     'storage', 
-    'sidePanel',
-    "https://*/*"
+    'sidePanel'
   ],
   side_panel: {
     default_path: 'src/pages/sidepanel/index.html',
@@ -34,10 +33,10 @@ const manifest = {
   },
   action: {
     default_popup: 'src/pages/popup/index.html',
-    default_icon: 'icon-34.png',
+    default_icon: 'gptchat_32.png',
   },
   icons: {
-    128: 'icon-128.png',
+    128: 'gptchat_128.png',
   },
   content_scripts: [
     {

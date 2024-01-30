@@ -12,217 +12,155 @@ import { FaRobot } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
 import { MessageFormat, Models, Role, getGPTResponse } from '@root/src/shared/utils/getGPTResponse';
+import { useEffect } from 'react';
+// import { getStorageData } from '@root/src/shared/utils/getStorageData';
+// import useStorage from '@root/src/shared/hooks/useStorage';
+// import chatHistory from '@root/src/shared/storages/chatHistory';
 // import { useEffect } from 'react';
 // import useStorage from '@root/src/shared/hooks/useStorage';
 
 
-
-
-
-// const OPENAI_URL = "https://api.openai.com/v1/chat/completions"
-
-
 const Popup = () => {
-  // const theme = useStorage(exampleThemeStorage);
+  
+
   const [modelSelected, 
-    // setModelSelected
+    setModelSelected
   ] = useState(Models.GPT_35_Turbo)
 
-  // const [isSending, setIsSending] = useState(false)
-
   const [apiKey, setApiKey] = useState('')
-  // const tmpMessages: MessageFormat[] = [
-  //   {
-  //     role: Role.User,
-  //     : 'Hey there!',
-  //   },
-  //   {
-  //     name: Role.AI,
-  //     message: 'Hows it going philip!',
-  //   },
-  //   {
-  //     name: Role.User,
-  //     message: 'Load wise, not now'
-  //   },
-  //   {
-  //     name: Role.AI,
-  //     message: 'good',
-  //   },
-   
-  // ]
 
-  // useEffect(() => {
+
+
+  useEffect(() => {
     chrome.storage.local.get(['apiKey'], function (result) { 
       if (result.apiKey) { 
         setApiKey(result.apiKey)
       } 
     })
-  // }, [])
+  }, [])
   
   const [newMessage, setNewMessage] = useState('')
-  const [toggle, setToggle] = useState(true)
+  const [toggle, setToggle] = useState(false)
   const openDropDown = () => setToggle(!toggle)
+  const [loading, setLoading] = useState(false)
+
+
+  const openSettings = () => { 
+    chrome.runtime.openOptionsPage()
+  }
+
+  const [chatMessages, setChatMessages] = useState<MessageFormat[]>([
+
+    { 
+      role: Role.AI, 
+      content: "I'm your helpful chat bot! I provide helpful and concise answers." 
+    }
+
+  ])
+  
+    // const result: MessageFormat[] | null = JSON.parse(localStorage.getItem('chatHistory'))
+    // // console.log(result)
+    // if (result !== null || result.length > 2) { 
+    //   setChatMessages(result)
+    // } 
 
   
-  const [chatMessages, setChatMessages] = useState<MessageFormat[]>([
-    { role: Role.AI, content: "I'm your helpful chat bot! I provide helpful and concise answers." }
-  ])
+  const clearHistory = () => { 
+    localStorage.clear()
+    
+    // const defaultMessage = { role: Role.AI, 
+    //   content: "I'm your helpful chat bot! I provide helpful and concise answers." 
+    // }
+    // setChatMessages(prev => [...prev, defaultMessage])
+  }  
+  
 
   const sendResponse = async (newMessage, apiKey, modelSelected) => {
-    
+
+    // Set loading state to `True`
+    setLoading(true)
+
+    // Create a new message
     const testMessage: MessageFormat = { 
       role: Role.User,
       content: newMessage
     }
+
+    // Add to message history
     setChatMessages((prev) => [...prev, testMessage])
+    // localStorage.setItem('chatHistory', JSON.stringify(chatMessages))
+
+    // Send `newMessage` to Open AI and get a response
+    const response: MessageFormat | null = 
+      await getGPTResponse(newMessage, apiKey, modelSelected)
+        .then((response) => {
+
+          if (!response.choices || response.choices.length === 0) return null
+          const { choices } = response 
+          const chatResponse: MessageFormat = { 
+            role: Role.AI,
+            content: choices[0].message.content
+          }
+          return chatResponse
+
+        })
+        .catch((e) => {
+          console.error(e)
+          return null
+        })
+
+    // Add Open AI's response to chat list
+    setChatMessages((prev) => [...prev, response])
+
+    // Save to local browser
+    localStorage.setItem('chatHistory', JSON.stringify(chatMessages))
+    console.log(chatMessages)
     
-    
-    const response: MessageFormat | null = await getGPTResponse(newMessage, apiKey, modelSelected)
-      .then((response) => {
-
-        if (!response.choices || response.choices.length === 0) return null
-        const { choices } = response 
-        const chatResponse: MessageFormat = { 
-          role: Role.User,
-          content: choices[0].message.content
-        }
-        return chatResponse
-
-      })
-      .catch((e) => {
-        console.error(e)
-        return null
-      })
-      setChatMessages((prev) => [...prev, response])
-
-
+    // Reset Loading State to default
+    setLoading(false)
   }
 
-  // getGPTResponse<MessageFormat>(newMessage, apiKey, modelSelected)
-  //   .then(() => { 
-  //     const testMessage: MessageFormat = { 
-  //       role: Role.User,
-  //       content: newMessage
-  //     }
-  //     setChatMessages((prev) => [...prev, testMessage])
-  //   }) 
-  //   .then(async (response) => { 
 
-  //     if (response=== null || response === void 0) return []
-
-  //     setChatMessages((prev) => [...prev, response])
-
-  //   }).catch((e) => { 
-  //     console.error(e)
-  //   }) 
-
-
-  // const sendMessage =  async (newMessage, apiKey) => { 
-  //   //  Send messages to chat gpt 
-  //   if (!newMessage) return 
-  //   const testMessage: MessageFormat = { 
-  //     role: Role.User,
-  //     content: newMessage
-  //   }
-  //   setChatMessages((prev) => [...prev, testMessage])
-  //   return await fetch(OPENAI_URL, { 
-  //     method: 'POST', 
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer ${apiKey}`
-  //     }, 
-  //     body: JSON.stringify({ 
-  //       model: 'gpt-3.5-turbo',
-  //       messages: [
-  //         {
-  //           role: 'user',
-  //           content: newMessage
-  //         }
-  //       ]
-  //     })
-  //   }).then(async (response) => { 
-
-  //     if (response.ok) { 
-        
-  //       const { choices, error } = await response.json();
-
-  //       console.error('Error', error)
-  //       console.log(choices[0].message.content)
-  //       const sampleMessage: MessageFormat = { 
-  //         role: Role.AI,
-  //         content: choices[0].message.content
-  //       }
-  //       setChatMessages((prev) => [...prev, sampleMessage])
-
-  //     } else { 
-  //       console.error('Error: ', response.statusText)
-  //       const errorResponse = await response.json()
-  //       console.error('Error Details: ', errorResponse)
-
-  //       if (response.status == 401) { 
-  //         throw new Error("Looks like your API key is incorrect. Please check your API Key");
-  //       } else { 
-  //         throw new Error(`Failed to get a response. Status Code: ${response.status}`)
-  //       } 
-  //     }
-  
-  //   }).catch((e) => { 
-  //     console.error(e)
-  //     chrome.runtime.sendMessage({error: e.message})
-  //   });
-
-
-  //   /* 
-  //     const { choices, error } = await response.json();
-  //     if (response.ok) {
-  //       if (choices?.length > 0) {
-  //         const newSystemMessageSchema: MessageSchema = {
-  //           role: 'system',
-  //           content: choices[0].message.content,
-  //         };
-  //         res.json(newSystemMessageSchema);
-  //       } else {
-  //         // send error
-  //         res.status(500).send('No response from OpenAI');
-  //       }
-  //     } else {
-  //       res.status(500).send(error.message);
-  //     }
-  //   */
-  // }
+  const handleSubmit = (e) => { 
+    e.preventDefault();
+    // Send message to chat
+    sendResponse(newMessage, apiKey, modelSelected)
+    // Reset Input fields 
+    setNewMessage('')
+  }
 
 
   return (
     <div className='flex flex-col  w-full '>
+
+
       <div className='flex flex-row justify-between top-0 z-10 fixed w-full bg-gray-300 py-4 px-4 overflow-hidden'>
-        
         <div className="relative">
-          <button onClick={openDropDown} className='py-2 px-4 flex flex-row items-center  justify-center space-x-3 bg-slate-200 w-fit rounded-2xl text-[14px]' 
+          <button onClick={openDropDown} 
+            className='hover:bg-gray-400 py-2 w-36 flex  flex-row items-center ring-2 ring-slate-400  
+              shadow-md justify-center space-x-3 bg-slate-200 rounded-2xl text-[14px]' 
             title='LLM Engine'>
             <FaRobot height={20} width={20} color='#000'/> 
-            <p>{modelSelected}</p>
+            <p className='uppercase'>{modelSelected}</p>
           </button>
         </div>
-
         <div className='flex items-center space-x-2'>
-          <button className='p-2 bg-slate-200 w-fit rounded-xl' title='Clear chat'>
+          <button onClick={clearHistory} className='p-4 bg-slate-200  hover:bg-gray-400 w-fit rounded-2xl' title='Clear chat'>
             <FaTrash height={20} width={20} color='#000'/>
-
           </button>
-          <button className='p-2 bg-slate-200 w-fit rounded-xl' title='Setting'>
-          <FaGear height={20} width={20} color='#000'/>
-
+          <button onClick={openSettings} className='p-4 bg-slate-200  hover:bg-gray-400 w-fit rounded-2xl' title='Setting'>
+            <FaGear height={20} width={20} color='#000'/>
           </button>
         </div>
       </div>
 
 
-      {/* Scrollable chats */}
+      {/* Chat History */}
       <div className='pl-4 w-full h-full flex-col items-center justify-center'>
         <div className='overflow-auto max-h-[300px]'>
           {chatMessages.map(({content, role}, idx) => { 
             return (
-              <div key={idx} className='p-2 flex-col flex text-left items-start rounded-full w-full  mt-2'>
+              <div key={idx} className='p-2 flex-col flex text-left items-start rounded-full w-full  mt-1'>
                 <div className='font-bold'>
                   {role}
                 </div>
@@ -230,24 +168,41 @@ const Popup = () => {
                   {content}
                 </div>
               </div>
-
             )
           })}
         </div>
       </div>
 
+      
+      {
+        toggle && (
+          <div className='w-36  flex py-2 absolute top-14 flex-col space-y-2 px-2  left-4 rounded-2xl uppercase
+            bg-white z-50  h-fit text-sm shadow-md drop-shadow-md'>
+            <button onClick={() => setModelSelected(Models.GPT_35_Turbo)} 
+              className='py-2 hover:bg-slate-200 rounded-xl px-2 cursor-pointer text-left uppercase'>{Models.GPT_35_Turbo}</button>
+            <button onClick={() => setModelSelected(Models.GPT4)} 
+              className='py-2 hover:bg-slate-200 rounded-xl px-2 cursor-pointer text-left uppercase'>{Models.GPT4}</button>
+          </div>
+        )
+      }
 
       {/* Input fields */}
-
-      <div  className='w-full fixed b-full flex flex-row space-x-2 py-4 bottom-0 px-2 bg-slate-100'>
+      <form onSubmit={handleSubmit} className='w-full fixed b-full flex flex-row space-x-2 py-4 bottom-0 px-2 bg-slate-100'>
         <input type="text" 
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder='Message ChatGPT...' 
+          placeholder={`${loading ? 'Waiting for response...' : 'Message ChatGPT...' }`}
+          value={newMessage}
+          disabled={loading}
           className='rounded-lg border py-2 border-black px-2  w-full focus:outline-none text-sm '/>
-        <button onClick={() => sendResponse(newMessage, apiKey, modelSelected)} className=' items-center flex justify-center p-2 bg-slate-200 w-10 h-10 rounded-xl' title='Setting'>
+        <button 
+          type='submit' 
+          className=' items-center flex justify-center p-2 bg-slate-200 hover:bg-gray-400 w-10 h-10 rounded-xl' 
+          title='Send'
+          >
             <BsFillSendFill height={10} width={10}/>
         </button>
-      </div>
+
+      </form>
     </div>
   );
 };

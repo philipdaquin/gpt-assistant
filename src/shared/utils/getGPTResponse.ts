@@ -36,6 +36,7 @@ export type GPTResponse = {
   usage: GPTTokens,
   choices: GPTChoices[]
 }
+
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
 
