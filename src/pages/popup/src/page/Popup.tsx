@@ -11,28 +11,15 @@ import { useState } from 'react';
 import { FaRobot } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
+import { MessageFormat, Models, Role, getGPTResponse } from '@root/src/shared/utils/getGPTResponse';
 // import { useEffect } from 'react';
 // import useStorage from '@root/src/shared/hooks/useStorage';
 
 
 
-type MessageFormat = { 
-  role: Role,
-  content: string, 
-}
-
-enum Models { 
-  GPT_35_Turbo = 'gpt-3.5-turbo',
-  GPT4 = 'gpt-4'
-}
-
-enum Role { 
-  AI = 'system',
-  User = 'user'
-}
 
 
-const OPENAI_URL = "https://api.openai.com/v1/chat/completions"
+// const OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
 
 const Popup = () => {
@@ -64,7 +51,6 @@ const Popup = () => {
    
   // ]
 
-
   // useEffect(() => {
     chrome.storage.local.get(['apiKey'], function (result) { 
       if (result.apiKey) { 
@@ -82,86 +68,128 @@ const Popup = () => {
     { role: Role.AI, content: "I'm your helpful chat bot! I provide helpful and concise answers." }
   ])
 
-
-
-  const sendMessage =  async (newMessage, apiKey) => { 
-    //  Send messages to chat gpt 
-    if (!newMessage) return 
-
-
+  const sendResponse = async (newMessage, apiKey, modelSelected) => {
+    
     const testMessage: MessageFormat = { 
       role: Role.User,
       content: newMessage
     }
     setChatMessages((prev) => [...prev, testMessage])
-
     
     
-    return await fetch(OPENAI_URL, { 
-      method: 'POST', 
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      }, 
-      body: JSON.stringify({ 
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'user',
-            content: newMessage
-          }
-        ]
-      })
-    }).then(async (response) => { 
+    const response: MessageFormat | null = await getGPTResponse(newMessage, apiKey, modelSelected)
+      .then((response) => {
 
-      if (response.ok) { 
-        
-        const { choices, error } = await response.json();
-
-        console.error('Error', error)
-        console.log(choices[0].message.content)
-        const sampleMessage: MessageFormat = { 
-          role: Role.AI,
+        if (!response.choices || response.choices.length === 0) return null
+        const { choices } = response 
+        const chatResponse: MessageFormat = { 
+          role: Role.User,
           content: choices[0].message.content
         }
-        setChatMessages((prev) => [...prev, sampleMessage])
+        return chatResponse
 
-      } else { 
-        console.error('Error: ', response.statusText)
-        const errorResponse = await response.json()
-        console.error('Error Details: ', errorResponse)
-
-        if (response.status == 401) { 
-          throw new Error("Looks like your API key is incorrect. Please check your API Key");
-        } else { 
-          throw new Error(`Failed to get a response. Status Code: ${response.status}`)
-        } 
-      }
-  
-    }).catch((e) => { 
-      console.error(e)
-      // chrome.runtime.sendMessage({error: e.message})
-    });
+      })
+      .catch((e) => {
+        console.error(e)
+        return null
+      })
+      setChatMessages((prev) => [...prev, response])
 
 
-    /* 
-      const { choices, error } = await response.json();
-      if (response.ok) {
-        if (choices?.length > 0) {
-          const newSystemMessageSchema: MessageSchema = {
-            role: 'system',
-            content: choices[0].message.content,
-          };
-          res.json(newSystemMessageSchema);
-        } else {
-          // send error
-          res.status(500).send('No response from OpenAI');
-        }
-      } else {
-        res.status(500).send(error.message);
-      }
-    */
   }
+
+  // getGPTResponse<MessageFormat>(newMessage, apiKey, modelSelected)
+  //   .then(() => { 
+  //     const testMessage: MessageFormat = { 
+  //       role: Role.User,
+  //       content: newMessage
+  //     }
+  //     setChatMessages((prev) => [...prev, testMessage])
+  //   }) 
+  //   .then(async (response) => { 
+
+  //     if (response=== null || response === void 0) return []
+
+  //     setChatMessages((prev) => [...prev, response])
+
+  //   }).catch((e) => { 
+  //     console.error(e)
+  //   }) 
+
+
+  // const sendMessage =  async (newMessage, apiKey) => { 
+  //   //  Send messages to chat gpt 
+  //   if (!newMessage) return 
+  //   const testMessage: MessageFormat = { 
+  //     role: Role.User,
+  //     content: newMessage
+  //   }
+  //   setChatMessages((prev) => [...prev, testMessage])
+  //   return await fetch(OPENAI_URL, { 
+  //     method: 'POST', 
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer ${apiKey}`
+  //     }, 
+  //     body: JSON.stringify({ 
+  //       model: 'gpt-3.5-turbo',
+  //       messages: [
+  //         {
+  //           role: 'user',
+  //           content: newMessage
+  //         }
+  //       ]
+  //     })
+  //   }).then(async (response) => { 
+
+  //     if (response.ok) { 
+        
+  //       const { choices, error } = await response.json();
+
+  //       console.error('Error', error)
+  //       console.log(choices[0].message.content)
+  //       const sampleMessage: MessageFormat = { 
+  //         role: Role.AI,
+  //         content: choices[0].message.content
+  //       }
+  //       setChatMessages((prev) => [...prev, sampleMessage])
+
+  //     } else { 
+  //       console.error('Error: ', response.statusText)
+  //       const errorResponse = await response.json()
+  //       console.error('Error Details: ', errorResponse)
+
+  //       if (response.status == 401) { 
+  //         throw new Error("Looks like your API key is incorrect. Please check your API Key");
+  //       } else { 
+  //         throw new Error(`Failed to get a response. Status Code: ${response.status}`)
+  //       } 
+  //     }
+  
+  //   }).catch((e) => { 
+  //     console.error(e)
+  //     chrome.runtime.sendMessage({error: e.message})
+  //   });
+
+
+  //   /* 
+  //     const { choices, error } = await response.json();
+  //     if (response.ok) {
+  //       if (choices?.length > 0) {
+  //         const newSystemMessageSchema: MessageSchema = {
+  //           role: 'system',
+  //           content: choices[0].message.content,
+  //         };
+  //         res.json(newSystemMessageSchema);
+  //       } else {
+  //         // send error
+  //         res.status(500).send('No response from OpenAI');
+  //       }
+  //     } else {
+  //       res.status(500).send(error.message);
+  //     }
+  //   */
+  // }
 
 
   return (
@@ -216,7 +244,7 @@ const Popup = () => {
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder='Message ChatGPT...' 
           className='rounded-lg border py-2 border-black px-2  w-full focus:outline-none text-sm '/>
-        <button onClick={() => sendMessage(newMessage, apiKey)} className=' items-center flex justify-center p-2 bg-slate-200 w-10 h-10 rounded-xl' title='Setting'>
+        <button onClick={() => sendResponse(newMessage, apiKey, modelSelected)} className=' items-center flex justify-center p-2 bg-slate-200 w-10 h-10 rounded-xl' title='Setting'>
             <BsFillSendFill height={10} width={10}/>
         </button>
       </div>
