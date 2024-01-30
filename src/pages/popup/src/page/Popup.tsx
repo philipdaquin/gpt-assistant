@@ -53,13 +53,25 @@ const Popup = () => {
 
   const [chatMessages, setChatMessages] = useState<MessageFormat[]>([
 
-    { 
-      role: Role.AI, 
-      content: "I'm your helpful chat bot! I provide helpful and concise answers." 
-    }
+    // { 
+    //   role: Role.AI, 
+    //   content: "I'm your helpful chat bot! I provide helpful and concise answers." 
+    // }
 
   ])
 
+
+  useEffect(() => {
+    chrome.storage.local.get(["chatHistory"], function (result) { 
+      const history = result.chatHistory || [] 
+      console.log(history)
+      if (history.lenghth > 0) { 
+        setChatMessages(history.chatHistory)
+      }
+    })
+  }, [])
+  
+  
 
 
   // const mockData: MessageFormat[] = [
@@ -74,8 +86,6 @@ const Popup = () => {
   //   { role: Role.User, content: 'Yes, please guide me through the password reset process.' },
   //   // ... add more messages as needed
   // ];
-
-
 
 
     // const result: MessageFormat[] | null = JSON.parse(localStorage.getItem('chatHistory'))
@@ -131,9 +141,10 @@ const Popup = () => {
 
     // Add Open AI's response to chat list
     setChatMessages((prev) => [...prev, response])
+    chrome.storage.local.set({chatHistory: chatMessages})
+
 
     // Save to local browser
-    localStorage.setItem('chatHistory', JSON.stringify(chatMessages))
     console.log(chatMessages)
     
     // Reset Loading State to default
@@ -167,9 +178,6 @@ const Popup = () => {
 
     }
   }, [chatMessages])
-
-
-
 
 
   return (
