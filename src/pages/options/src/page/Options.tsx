@@ -5,6 +5,7 @@ import React from 'react';
 
 import { TrashIcon } from '@heroicons/react/24/outline'
 import {FaSave} from 'react-icons/fa'
+import { useEffect } from 'react';
 
 
 
@@ -21,17 +22,17 @@ const Options: React.FC = () => {
   const [message, setMessage] = useState('')
 
 
-  // useEffect(() => {
-  //   chrome.storage.local.get(['apiKey'], function (result) { 
-  //     if (result.apiKey) { 
-  //         setApiKey(result.apiKey)
-  //     } 
-  //   })
-  // }, [])
+  useEffect(() => {
+    chrome.storage.local.get(['apiKey'], function (result) { 
+      if (result.apiKey) { 
+        setApiKey(result.apiKey)
+      } 
+    })
+  }, [])
   
 
   const onSubmit = (action: Action) => { 
-      if (!apiKey && apiKey.length > 10 && apiKey.length < 100 && apiKey.includes('sk-')) { 
+      if (apiKey !== '' && apiKey.length > 10 && apiKey.length < 100 && apiKey.includes('sk-')) { 
           if (action == Action.ADD) { 
               chrome.storage.local.set({'apiKey' : apiKey}, function () { 
                   console.log('Data saved:', apiKey)
@@ -65,6 +66,7 @@ const Options: React.FC = () => {
               <div className='flex space-x-3 mt-5'>
                   <input type="text" className='border border-black px-1 py-0 w-full focus:outline-none text-sm' 
                       onChange={(e) => setApiKey(e.target.value)} 
+                      value={apiKey}
                       placeholder='Open AI API key'/> 
                   
                   <button onClick={() => onSubmit(Action.ADD)} className='cursor-pointer rounded-lg text-white flex items-center space-x-2 transition-colors duration-200 bg-[#4caf50] px-4 py-3 active:bg-[#2e6f30] hover:bg-[#2e6f30]'>
