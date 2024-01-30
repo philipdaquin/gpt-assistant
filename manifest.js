@@ -1,5 +1,5 @@
-import fs from 'node:fs';
-const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+// import fs from 'node:fs';
+// const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 /**
  * After changing, please reload the extension at `chrome://extensions`
@@ -12,10 +12,12 @@ const manifest = {
    * if you want to support multiple languages, you can use the following reference
    * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization
    */
-  name: '__MSG_extensionName__',
-  version: packageJson.version,
-  description: '__MSG_extensionDescription__',
-  
+  name: 'Mini ChatGPT on your browser',
+  // version: packageJson.version,
+  version: "0.0.1",
+
+  description: 'A minified version of ChatGPT. The purpose is simplify my use of ChatGPT without using moving to another page. ',
+  author: "Philip Daquin",
   permissions: [
     'storage', 
     'sidePanel'
