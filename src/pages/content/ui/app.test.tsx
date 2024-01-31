@@ -5,7 +5,7 @@ import App from '@pages/content/ui/app';
 describe('appTest', () => {
   test('render text', () => {
     // given
-    const text = 'content view';
+    const text = 'content ';
 
     // when
     render(<App />);
