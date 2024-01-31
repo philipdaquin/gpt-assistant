@@ -2,9 +2,9 @@
 A minified version of ChatGPT. The purpose is simplify my use of ChatGPT without using moving to another page.
 
 ## Features
-✅ Direct Access to Open AI 
-✅ Switch to GPT3 to GPT4 easily
-❌ Chat History
+- ✅ Direct Access to Open AI 
+- ✅ Switch to GPT3 to GPT4 easily
+- ❌ Chat History
 
 ## Get Started
 1. Install on Google Chrome
