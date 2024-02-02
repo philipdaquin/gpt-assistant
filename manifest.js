@@ -19,7 +19,8 @@ const manifest = {
   description: 'An ai assistant available in your browser without leaving to another page.',
   author: "Philip Daquin",
   permissions: [
-    'storage'
+    'storage',
+    'activeTab'
   ],
 
   host_permissions: [
