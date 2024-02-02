@@ -19,12 +19,11 @@ const manifest = {
   description: 'An ai assistant available in your browser without leaving to another page.',
   author: "Philip Daquin",
   permissions: [
-    'storage',
-    'activeTab'
+    'storage'
   ],
 
   host_permissions: [
-    "https://api.openai.com/v1/completions"
+    'https://*.openai.com/',
   ],
   options_page: 'src/pages/options/index.html',
   background: {
