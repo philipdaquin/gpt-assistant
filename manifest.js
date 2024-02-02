@@ -12,11 +12,11 @@ const manifest = {
    * if you want to support multiple languages, you can use the following reference
    * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization
    */
-  name: 'Mini ChatGPT on your browser',
+  name: 'Pocket AI Assistant',
   // version: packageJson.version,
   version: "0.0.1",
 
-  description: 'A minified version of ChatGPT. The purpose is simplify my use of ChatGPT without using moving to another page. ',
+  description: 'An ai assistant available in your browser without leaving to another page.',
   author: "Philip Daquin",
   permissions: [
     'storage'
