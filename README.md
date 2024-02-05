@@ -17,12 +17,12 @@ An ai assistant available in your browser without leaving to another page.
 
 
 ## Features <a name="features"></a>
-✅ Direct Access to Open AI 
-✅ Switch to GPT3 to GPT4 easily
-❌ Chat History (🔜)
+- ✅ Direct Access to Open AI 
+- ✅ Switch to GPT3 to GPT4 easily
+- ❌ Chat History (🔜)
 
 ## Get Started <a name="get-started"></a>
-1. Install on Google Chrome (PENDING MODE)
+1. Install on Google Chrome ([Link](https://chromewebstore.google.com/detail/pocket-ai-assistant/dopacffchhobekbnggdpepadcdoifhoc))
 2. Get your Open AI Key ID
 3. Enjoy!
 
