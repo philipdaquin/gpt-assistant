@@ -1,7 +1,8 @@
 
 export enum Role { 
   AI = 'system',
-  User = 'user'
+  User = 'user',
+  Assistant = 'assistant'
 }
 
 export enum Models { 
@@ -39,6 +40,7 @@ export type GPTResponse = {
 
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
+const chatHistory: MessageFormat[] = []
 
 export async function getGPTResponse(
     message: string, 
@@ -47,7 +49,12 @@ export async function getGPTResponse(
     
     ): Promise<GPTResponse> { 
 
+    chatHistory.push( {
+      role: Role.User, 
+      content: message
+    })
     
+      
     return await fetch(OPENAI_URL, { 
         method: 'POST', 
         headers: {
@@ -56,26 +63,23 @@ export async function getGPTResponse(
         }, 
         body: JSON.stringify({ 
           model: modelSelection,
-          messages: [
-            {
-              role: 'user',
-              content: message
-            }
-          ]
+          messages: chatHistory
         })
       }).then(async (response) => { 
   
         if (response.ok) { 
-        //   const { choices, error } = await response.json();
-        //   console.error('Error', error)
-        //   console.log(choices[0].message.content)
-        //   const message: MessageFormat = { 
-        //     role: Role.AI,
-        //     content: choices[0].message.content
-        //   }
-        //   return message
-          return await response.json()
-        //   setChatMessages((prev) => [...prev, sampleMessage])
+     
+          const openai = await response.json()
+          chatHistory.push( {
+            role: Role.Assistant, 
+            content: openai.choices[0].message.content
+          })
+          // console.log(chatHistory)
+          chrome.storage.local.set({'chatHistory' : chatHistory}, function () { 
+            console.log('ChatHistory saved:', chatHistory)
+        })
+
+          return openai
   
         } else { 
           console.error('Error: ', response.statusText)

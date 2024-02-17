@@ -32,7 +32,6 @@ const Popup = () => {
   const [apiKey, setApiKey] = useState('')
 
 
-
   useEffect(() => {
     chrome.storage.local.get(['apiKey'], function (result) { 
       if (result.apiKey) { 
@@ -46,82 +45,37 @@ const Popup = () => {
   const openDropDown = () => setToggle(!toggle)
   const [loading, setLoading] = useState(false)
 
-
-  const openSettings = () => { 
-    chrome.runtime.openOptionsPage()
-  }
-
-  const [chatMessages, setChatMessages] = useState<MessageFormat[]>([
-
-    // { 
-    //   role: Role.AI, 
-    //   content: "I'm your helpful chat bot! I provide helpful and concise answers." 
-    // }
-
-  ])
-
+  const openSettings = () => chrome.runtime.openOptionsPage()
+  const [chatMessages, setChatMessages] = useState<MessageFormat[]>([])
 
   useEffect(() => {
     chrome.storage.local.get(["chatHistory"], function (result) { 
+
+      console.log("Loaded messages", result)
+
       const history = result.chatHistory || [] 
       console.log(history)
-      if (history.lenghth > 0) { 
-        setChatMessages(history.chatHistory)
+      if (history.length > 0) { 
+        setChatMessages(history)
+        
       }
     })
   }, [])
   
-  
-
-
-  // const mockData: MessageFormat[] = [
-  //   { role: Role.AI, content: 'Hello! How can I assist you today?' },
-  //   { role: Role.User, content: 'Hi there! I have a question about your services.' },
-  //   { role: Role.AI, content: "Sure, I'd be happy to help. What do you need assistance with?" },
-  //   { role: Role.User, content: "I'm having trouble with my account login." },
-  //   { role: Role.AI, content: "I apologize for the inconvenience. Could you please provide your username?" },
-  //   { role: Role.User, content: 'My username is example_user123.' },
-  //   { role: Role.AI, content: 'Thank you. Let me check that for you.' },
-  //   { role: Role.AI, content: 'It looks like there might be an issue with your password. Would you like to reset it?' },
-  //   { role: Role.User, content: 'Yes, please guide me through the password reset process.' },
-  //   // ... add more messages as needed
-  // ];
-
-
-    // const result: MessageFormat[] | null = JSON.parse(localStorage.getItem('chatHistory'))
-    // // console.log(result)
-    // if (result !== null || result.length > 2) { 
-    //   setChatMessages(result)
-    // } 
-
-  
-  const clearHistory = () => { 
-    localStorage.clear()
-    
-    // const defaultMessage = { role: Role.AI, 
-    //   content: "I'm your helpful chat bot! I provide helpful and concise answers." 
-    // }
-    // setChatMessages(prev => [...prev, defaultMessage])
-  }  
-  
+  const clearHistory = () =>  {
+    chrome.storage.local.set({'chatHistory' : []}, function () { 
+      console.log('Deleted ChatHistory')
+      setChatMessages([])
+      chrome.runtime.reload()
+    })
+  }
 
   const sendResponse = async (newMessage, apiKey, modelSelected) => {
 
     // Set loading state to `True`
     setLoading(true)
-
-    // Create a new message
-    const testMessage: MessageFormat = { 
-      role: Role.User,
-      content: newMessage
-    }
-
-    // Add to message history
-    setChatMessages((prev) => [...prev, testMessage])
-    // localStorage.setItem('chatHistory', JSON.stringify(chatMessages))
-
     // Send `newMessage` to Open AI and get a response
-    const response: MessageFormat | null = 
+    const response: MessageFormat = 
       await getGPTResponse(newMessage, apiKey, modelSelected)
         .then((response) => {
 
@@ -132,7 +86,6 @@ const Popup = () => {
             content: choices[0].message.content
           }
           return chatResponse
-
         })
         .catch((e) => {
           console.error(e)
@@ -141,12 +94,7 @@ const Popup = () => {
 
     // Add Open AI's response to chat list
     setChatMessages((prev) => [...prev, response])
-    chrome.storage.local.set({chatHistory: chatMessages})
-
-
-    // Save to local browser
-    console.log(chatMessages)
-    
+    // chrome.storage.local.set({chatHistory: chatMessages})
     // Reset Loading State to default
     setLoading(false)
   }
@@ -160,14 +108,7 @@ const Popup = () => {
     setNewMessage('')
   }
 
-
   const chatContainer = useRef(null)
-  // const scrollToBottom = () => {
-  //   if (chatContainer.current) { 
-  //     chatContainer.current.scrollTop = chatContainer.current.scrollHeight
-  //   }
-  // }
-
   useEffect(() => { 
     // scrollToBottom()
     if (chatMessages.length) { 
@@ -175,14 +116,12 @@ const Popup = () => {
         behavior: "smooth",
         block: 'end'
       }))
-
     }
   }, [chatMessages])
 
 
   return (
     <div className='flex flex-col  w-full '>
-
 
       <div className='flex shadow-md flex-row justify-between top-0 z-10 fixed w-full bg-gray-300 py-4 px-4 overflow-hidden'>
         <div className="relative">
