@@ -32,7 +32,7 @@ const Options: React.FC = () => {
   
 
   const onSubmit = (action: Action) => { 
-      if (apiKey !== '' && apiKey.length > 10 && apiKey.length < 100 && apiKey.includes('sk-')) { 
+      if (apiKey !== '' && apiKey.length > 10 && apiKey.includes('sk-')) { 
           if (action == Action.ADD) { 
               chrome.storage.local.set({'apiKey' : apiKey}, function () { 
                   console.log('Data saved:', apiKey)
